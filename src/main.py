@@ -91,7 +91,6 @@ def netease_play(id: str, type: str = "song"):
     """
     try:
         # 构造 JSON 指令
-        # cmd: "play" 是关键，告诉客户端立即播放
         command = {
             "type": type,
             "id": str(id),
@@ -102,17 +101,37 @@ def netease_play(id: str, type: str = "song"):
         json_str = json.dumps(command, separators=(',', ':'))
         encoded = base64.b64encode(json_str.encode('utf-8')).decode('utf-8')
         
-        # 生成最终 URL Scheme
-        url = f"orpheus://{encoded}"
+        # 生成客户端 URL Scheme
+        app_url = f"orpheus://{encoded}"
+        logger.info(f"Generated App URL: {app_url}")
         
-        logger.info(f"Generated Play URL: {url}")
-        
-        if sys.platform == 'win32':
-            os.startfile(url)
-        else:
-            subprocess.run(["open", url])
+        # 尝试唤起客户端
+        try:
+            if sys.platform == 'win32':
+                os.startfile(app_url)
+            else:
+                # macOS open 命令，检查返回码
+                ret = subprocess.run(["open", app_url], capture_output=True)
+                if ret.returncode != 0:
+                    raise FileNotFoundError("macOS open failed")
             
-        return f"已发送播放指令: {type} {id}"
+            return f"已发送播放指令: {type} {id}"
+            
+        except (OSError, FileNotFoundError, subprocess.CalledProcessError) as e:
+            logger.warning(f"无法唤起客户端: {e}，尝试使用网页版")
+            
+            # 构造网页版 URL
+            # 单曲: https://music.163.com/#/song?id=123
+            # 歌单: https://music.163.com/#/playlist?id=123
+            web_type = "song" if type == "song" else "playlist"
+            web_url = f"https://music.163.com/#/{web_type}?id={id}"
+            
+            if sys.platform == 'win32':
+                os.startfile(web_url)
+            else:
+                subprocess.run(["open", web_url])
+                
+            return f"⚠️ 未检测到客户端，已在浏览器中播放: {web_url}"
         
     except Exception as e:
         return f"播放失败: {e}"
