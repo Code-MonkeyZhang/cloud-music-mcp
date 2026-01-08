@@ -11,12 +11,11 @@ An advanced Model Context Protocol (MCP) server for controlling NetEase Cloud Mu
 
 ### ✨ Features
 
-*   **🤖 AI DJ for You**: Let Gemini (or any MCP-compatible Agent) control your music. Just say "Play some music" and it handles the rest.
+*   **🤖 AI DJ for You**: Let your **AI Agent** (Claude, Gemini, or any MCP-compatible LLM) control your music. Just say "Play some music" and it handles the rest.
 *   **🔓 Seamless QR Code Login**: Securely login via QR Code scan (simulating the official client behavior). Your session cookies are stored locally and never uploaded to the cloud.
 *   **🧠 Personalized Experience**: Access your **Daily Recommendations** and **User Playlists** (including your "Red Heart" / Liked Songs). The Agent plays music based on your personal taste.
 *   **🔍 Search & Play**: Search for any song, artist, or album by keyword and play it instantly.
 *   **🚀 High Performance**: Built with `pyncm` (Open API) and `fastmcp`, it's significantly faster and more stable than traditional UI automation methods.
-*   **🛡️ Smart Fallback**: Automatically detects if the desktop client is installed. If not, it gracefully falls back to the Web Player.
 
 ### 🛠️ Tools
 
@@ -68,12 +67,11 @@ Ensure your MCP settings are configured to use the virtual environment:
 
 ### ✨ 功能特性
 
-*   **🤖 让 Gemini 为你播放音乐**：通过自然语言指令控制音乐播放。只需说“给我放首歌”，Agent 就会为你搞定一切。
+*   **🤖 让 AI Agent 为你播放音乐**：通过自然语言指令控制音乐播放。只需说“给我放首歌”，Agent 就会为你搞定一切。
 *   **🔓 扫码登录**：支持使用手机 App 扫码安全登录。登录状态（Cookies）仅保存在本地，保护您的隐私。
 *   **🧠 个性化推荐**：完美接入您的**每日推荐**和**歌单**（包括“我喜欢的音乐”）。Agent 会根据您的听歌品味来播放音乐。
 *   **🔍 搜歌功能**：支持按关键词搜索歌曲、歌手或专辑，并直接播放。
 *   **🚀 高性能**：基于 `pyncm` (Open API) 和 `fastmcp` 构建，比传统的 Selenium UI 自动化脚本更快、更稳定。
-*   **🛡️ 智能降级**：自动检测是否安装了桌面客户端。如果没有安装，会自动调用浏览器打开网页版播放，保证服务可用性。
 
 ### 🛠️ 工具列表
 
