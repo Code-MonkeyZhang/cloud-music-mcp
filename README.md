@@ -58,18 +58,23 @@ uv pip install -r requirements.txt
 请确保您的 MCP 配置文件指向了正确的虚拟环境路径。您也可以在此处通过环境变量开启日志功能。
 
 ```json
-"netease-music-pro": {
-  "command": "/path/to/project/.venv/bin/python", // 指向虚拟环境的 python
-  "args": [
-    "src/main.py"
-  ],
-  "cwd": "/path/to/project",
-  "env": {
-    "PYTHONPATH": "src", // 确保能找到模块
-    "MCP_LOG_ENABLE": "true" // [可选] 开启日志记录，日志将保存在 logs/ 目录下
+{
+  "mcpServers": {
+    "netease-music-pro": {
+      "command": "/绝对路径/到/您的项目/.venv/bin/python",
+      "args": [
+        "src/main.py"
+      ],
+      "cwd": "/绝对路径/到/您的项目/netease-mcp-server",
+      "env": {
+        "MCP_LOG_ENABLE": "true" 
+      }
+    }
   }
 }
 ```
+
+> **注意**：请将 `/绝对路径/到/您的项目` 替换为您实际的存放路径。Windows 用户请使用双反斜杠 `\\` 或正斜杠 `/`。
 
 **日志说明：**
 *   **默认状态**：日志功能默认关闭。
