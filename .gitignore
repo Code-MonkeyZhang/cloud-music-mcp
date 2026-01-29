@@ -19,3 +19,12 @@ logs/
 
 # Mac
 .DS_Store
+
+# Python Eggs
+*.egg-info/
+*.egg/
+
+# SQLite Databases
+*.sqlite
+*.sqlite3
+*.db

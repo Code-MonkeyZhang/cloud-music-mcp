@@ -1,6 +1,0 @@
-mcp
-fastmcp
-pyncm
-qrcode
-Pillow
-requests

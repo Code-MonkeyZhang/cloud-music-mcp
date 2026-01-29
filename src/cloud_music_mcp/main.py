@@ -19,9 +19,13 @@ import base64
 # 确保能导入同级模块
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from log import setup_logging
-from auth import check_login_status, login_via_qrcode
-from api import get_daily_recommendations, get_user_playlists, search_song
+from cloud_music_mcp.log import setup_logging
+from cloud_music_mcp.auth import check_login_status, login_via_qrcode
+from cloud_music_mcp.api import (
+    get_daily_recommendations,
+    get_user_playlists,
+    search_song,
+)
 
 # 配置日志 (初始化)
 logger = setup_logging("main")
@@ -38,39 +42,39 @@ logging.getLogger("pyncm.api").setLevel(logging.WARNING)
 logging.getLogger("pyncm.helper").setLevel(logging.WARNING)
 
 # 初始化 MCP Server
-mcp = FastMCP("Netease-OpenAPI-Music")
+mcp = FastMCP("Cloud-Music-MCP")
 
 
 @mcp.tool()
-def netease_status():
+def cloud_music_status():
     """检查网易云音乐当前是否已登录"""
-    logger.info("Calling netease_status")
+    logger.info("Calling cloud_music_status")
     status = check_login_status()
     if status["logged_in"]:
         return f"已登录，当前用户: {status['nickname']}"
     else:
-        return "未登录，请使用 netease_login 进行扫码登录"
+        return "未登录，请使用 cloud_music_login 进行扫码登录"
 
 
 @mcp.tool()
-def netease_login():
+def cloud_music_login():
     """
     登录网易云音乐 (模拟 OAuth 流程)
     调用此工具后，电脑会弹出一张二维码图片。
     请用网易云音乐 App 扫描该二维码。
     扫描成功后，工具会自动保存登录状态。
     """
-    logger.info("Calling netease_login")
+    logger.info("Calling cloud_music_login")
     return login_via_qrcode()
 
 
 @mcp.tool()
-def netease_get_daily_recommend():
+def cloud_music_get_daily_recommend():
     """
     获取今日推荐歌曲
     返回歌曲列表 (包含 ID, 歌名, 歌手)
     """
-    logger.info("Calling netease_get_daily_recommend")
+    logger.info("Calling cloud_music_get_daily_recommend")
     result = get_daily_recommendations()
     if result["success"]:
         # 格式化输出以便阅读
@@ -83,11 +87,11 @@ def netease_get_daily_recommend():
 
 
 @mcp.tool()
-def netease_my_playlists():
+def cloud_music_my_playlists():
     """
     获取我的歌单 (包括创建的歌单和红心歌单)
     """
-    logger.info("Calling netease_my_playlists")
+    logger.info("Calling cloud_music_my_playlists")
     result = get_user_playlists()
     if result["success"]:
         text = "我的歌单:\n"
@@ -102,13 +106,13 @@ def netease_my_playlists():
 
 
 @mcp.tool()
-def netease_search(keyword: str):
+def cloud_music_search(keyword: str):
     """
     搜索歌曲
     args:
         keyword: 歌名或歌手
     """
-    logger.info(f"Calling netease_search with keyword: {keyword}")
+    logger.info(f"Calling cloud_music_search with keyword: {keyword}")
     result = search_song(keyword)
     if result["success"]:
         return result["songs"]
@@ -117,14 +121,14 @@ def netease_search(keyword: str):
 
 
 @mcp.tool()
-def netease_play(id: str, type: str = "song"):
+def cloud_music_play(id: str, type: str = "song"):
     """
     唤起客户端播放指定歌曲或歌单
     args:
         id: 歌曲ID 或 歌单ID
         type: 'song' (单曲) 或 'playlist' (歌单)
     """
-    logger.info(f"Calling netease_play with id: {id}, type: {type}")
+    logger.info(f"Calling cloud_music_play with id: {id}, type: {type}")
     try:
         # 构造 JSON 指令
         command = {"type": type, "id": str(id), "cmd": "play"}
