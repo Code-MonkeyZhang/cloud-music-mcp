@@ -89,7 +89,7 @@ uv pip install -e .
 {
   "mcpServers": {
     "cloud-music": {
-      "command": ["/绝对路径/到/cloud-music-mcp/.venv/bin/cloud-music-mcp"],
+      "command": ["/绝对路径到/cloud-music-mcp/.venv/bin/cloud-music-mcp"],
       "enabled": true
     }
   }
