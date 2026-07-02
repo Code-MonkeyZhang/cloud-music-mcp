@@ -20,6 +20,7 @@ import base64
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from cloud_music_mcp.log import setup_logging
+from cloud_music_mcp.prompts import load_prompt
 from cloud_music_mcp.auth import check_login_status, login_via_qrcode
 from cloud_music_mcp.api import (
     get_daily_recommendations,
@@ -51,9 +52,8 @@ logging.getLogger("pyncm.helper").setLevel(logging.WARNING)
 mcp = FastMCP("Cloud-Music-MCP")
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_status"))
 def cloud_music_status():
-    """检查网易云音乐当前是否已登录"""
     logger.info("Calling cloud_music_status")
     status = check_login_status()
     if status["logged_in"]:
@@ -62,24 +62,14 @@ def cloud_music_status():
         return "未登录，请使用 cloud_music_login 进行扫码登录"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_login"))
 def cloud_music_login():
-    """
-    登录网易云音乐 (模拟 OAuth 流程)
-    调用此工具后，电脑会弹出一张二维码图片。
-    请用网易云音乐 App 扫描该二维码。
-    扫描成功后，工具会自动保存登录状态。
-    """
     logger.info("Calling cloud_music_login")
     return login_via_qrcode()
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_get_daily_recommend"))
 def cloud_music_get_daily_recommend():
-    """
-    获取今日推荐歌曲
-    返回歌曲列表 (包含 ID, 歌名, 歌手)
-    """
     logger.info("Calling cloud_music_get_daily_recommend")
     result = get_daily_recommendations()
     if result["success"]:
@@ -92,11 +82,8 @@ def cloud_music_get_daily_recommend():
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_my_playlists"))
 def cloud_music_my_playlists():
-    """
-    获取我的歌单 (包括创建的歌单和红心歌单)
-    """
     logger.info("Calling cloud_music_my_playlists")
     result = get_user_playlists()
     if result["success"]:
@@ -111,14 +98,8 @@ def cloud_music_my_playlists():
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_search"))
 def cloud_music_search(keyword: str, category: str = "song"):
-    """
-    搜索歌曲、专辑、歌手或歌单
-    args:
-        keyword: 搜索关键词（歌名、歌手名、专辑名等）
-        category: 搜索类型，可选 'song'(歌曲)、'album'(专辑)、'artist'(歌手)、'playlist'(歌单)，默认为 'song'
-    """
     logger.info(f"Calling cloud_music_search with keyword: {keyword}, category: {category}")
     result = search(keyword, category=category)
     if result["success"]:
@@ -127,13 +108,8 @@ def cloud_music_search(keyword: str, category: str = "song"):
         return f"搜索失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_playlist_detail"))
 def cloud_music_playlist_detail(playlist_id: int):
-    """
-    获取歌单详情，包括歌单内所有歌曲
-    args:
-        playlist_id: 歌单 ID
-    """
     logger.info(f"Calling cloud_music_playlist_detail with playlist_id: {playlist_id}")
     result = get_playlist_detail(playlist_id)
     if result["success"]:
@@ -145,14 +121,8 @@ def cloud_music_playlist_detail(playlist_id: int):
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_create_playlist"))
 def cloud_music_create_playlist(name: str, privacy: bool = False):
-    """
-    创建新歌单
-    args:
-        name: 歌单名称
-        privacy: 是否设为隐私歌单，默认为 False
-    """
     logger.info(f"Calling cloud_music_create_playlist with name: {name}")
     result = create_playlist(name, privacy)
     if result["success"]:
@@ -161,14 +131,8 @@ def cloud_music_create_playlist(name: str, privacy: bool = False):
         return f"创建失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_add_to_playlist"))
 def cloud_music_add_to_playlist(playlist_id: int, track_ids: list[int]):
-    """
-    添加歌曲到指定歌单
-    args:
-        playlist_id: 目标歌单 ID
-        track_ids: 要添加的歌曲 ID 列表，例如 [123, 456]
-    """
     logger.info(f"Calling cloud_music_add_to_playlist with playlist_id: {playlist_id}, track_ids: {track_ids}")
     result = add_to_playlist(playlist_id, track_ids)
     if result["success"]:
@@ -177,13 +141,8 @@ def cloud_music_add_to_playlist(playlist_id: int, track_ids: list[int]):
         return f"添加失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_album_info"))
 def cloud_music_album_info(album_id: int):
-    """
-    获取专辑详情，包括专辑信息和歌曲列表
-    args:
-        album_id: 专辑 ID
-    """
     logger.info(f"Calling cloud_music_album_info with album_id: {album_id}")
     result = get_album_info(album_id)
     if result["success"]:
@@ -197,13 +156,8 @@ def cloud_music_album_info(album_id: int):
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_artist_info"))
 def cloud_music_artist_info(artist_id: int):
-    """
-    获取歌手详情和热门歌曲 Top 10
-    args:
-        artist_id: 歌手 ID
-    """
     logger.info(f"Calling cloud_music_artist_info with artist_id: {artist_id}")
     result = get_artist_info(artist_id)
     if result["success"]:
@@ -220,13 +174,8 @@ def cloud_music_artist_info(artist_id: int):
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_my_subscriptions"))
 def cloud_music_my_subscriptions(category: str = "artists"):
-    """
-    获取我收藏的歌手或专辑
-    args:
-        category: 类型，'artists'(歌手) 或 'albums'(专辑)，默认为 'artists'
-    """
     logger.info(f"Calling cloud_music_my_subscriptions with category: {category}")
     result = get_my_subscriptions(category)
     if result["success"]:
@@ -242,14 +191,8 @@ def cloud_music_my_subscriptions(category: str = "artists"):
         return f"获取失败: {result.get('error')}"
 
 
-@mcp.tool()
+@mcp.tool(description=load_prompt("cloud_music_play"))
 def cloud_music_play(id: str, type: str = "song"):
-    """
-    唤起客户端播放指定歌曲或歌单
-    args:
-        id: 歌曲ID 或 歌单ID
-        type: 'song' (单曲) 或 'playlist' (歌单)
-    """
     logger.info(f"Calling cloud_music_play with id: {id}, type: {type}")
     try:
         # 构造 JSON 指令
