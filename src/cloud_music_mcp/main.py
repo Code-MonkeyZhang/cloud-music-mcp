@@ -5,7 +5,10 @@ import logging
 
 # 彻底静音：将 stderr 重定向到 devnull
 # 这样可以消除 FastMCP 的 Banner 以及所有第三方库的日志干扰
-sys.stderr = open(os.devnull, "w")
+# 本地补丁：显式指定 UTF-8 + errors="replace"。原版用默认(locale)编码打开 nul，
+# 在非 UTF-8 代码页(如 cp1252)下写 FastMCP 横幅里的 emoji 会抛 UnicodeEncodeError，
+# 直接让进程退出码 1，而且因为 stderr 已被丢弃，看不到任何报错。
+sys.stderr = open(os.devnull, "w", encoding="utf-8", errors="replace")
 
 # 在导入 FastMCP 之前设置环境变量以抑制日志和 Banner
 os.environ["LOGURU_LEVEL"] = "WARNING"

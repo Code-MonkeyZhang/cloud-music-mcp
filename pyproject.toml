@@ -23,3 +23,8 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["cloud_music_mcp*"]
+
+# prompts/*.txt 是非 .py 文件，不声明的话 setuptools 不会打进 wheel/sdist，
+# 装完启动就会 FileNotFoundError: ...prompts/cloud_music_status.txt
+[tool.setuptools.package-data]
+cloud_music_mcp = ["prompts/*.txt"]
