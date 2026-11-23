@@ -34,6 +34,11 @@ from cloud_music_mcp.api import (
     get_my_subscriptions,
 )
 
+def _format_song_fee(song):
+    """保留上游收费标记；缺失时显式输出 null，不能当作免费。"""
+    return "fee=" + json.dumps(song.get("fee"), ensure_ascii=False)
+
+
 # 配置日志 (初始化)
 logger = setup_logging("main")
 
@@ -76,7 +81,7 @@ def cloud_music_get_daily_recommend():
         # 格式化输出以便阅读
         text = f"📅 今日推荐 ({len(result['songs'])}首):\n"
         for i, song in enumerate(result["songs"][:10], 1):  # 只展示前10首
-            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']})\n"
+            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']}, {_format_song_fee(song)})\n"
         return text
     else:
         return f"获取失败: {result.get('error')}"
@@ -115,7 +120,7 @@ def cloud_music_playlist_detail(playlist_id: int):
     if result["success"]:
         text = f"📋 歌单: {result['name']} ({result['count']}首)\n"
         for i, song in enumerate(result["songs"], 1):
-            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']})\n"
+            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']}, {_format_song_fee(song)})\n"
         return text
     else:
         return f"获取失败: {result.get('error')}"
@@ -150,7 +155,7 @@ def cloud_music_album_info(album_id: int):
         text = f"💿 专辑: {album['name']} - {album['artist']}\n"
         text += f"📅 发行日期: {album['publish_date']} | 共 {album['size']} 首\n"
         for i, song in enumerate(result["songs"], 1):
-            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']})\n"
+            text += f"{i}. {song['name']} - {song['artist']} (ID: {song['id']}, {_format_song_fee(song)})\n"
         return text
     else:
         return f"获取失败: {result.get('error')}"
@@ -168,7 +173,7 @@ def cloud_music_artist_info(artist_id: int):
             text += f"📝 {artist['description']}\n"
         text += "\n🔥 热门歌曲:\n"
         for i, song in enumerate(result["songs"], 1):
-            text += f"{i}. {song['name']} (ID: {song['id']})\n"
+            text += f"{i}. {song['name']} (ID: {song['id']}, {_format_song_fee(song)})\n"
         return text
     else:
         return f"获取失败: {result.get('error')}"
@@ -216,7 +221,7 @@ def cloud_music_play(id: str, type: str = "song"):
                 if ret.returncode != 0:
                     raise FileNotFoundError("macOS open failed")
 
-            return f"已发送播放指令: {type} {id}"
+            return f"已发送播放指令: {type} {id}（未确认实际播放，收费权限及可用性由客户端决定）"
 
         except (OSError, FileNotFoundError, subprocess.CalledProcessError) as e:
             logger.warning(f"无法唤起客户端: {e}，尝试使用网页版")
@@ -232,7 +237,7 @@ def cloud_music_play(id: str, type: str = "song"):
             else:
                 subprocess.run(["open", web_url])
 
-            return f"⚠️ 未检测到客户端，已在浏览器中播放: {web_url}"
+            return f"⚠️ 客户端唤起失败，已发送浏览器打开请求: {web_url}（未确认实际播放）"
 
     except Exception as e:
         logger.error(f"播放失败: {e}")

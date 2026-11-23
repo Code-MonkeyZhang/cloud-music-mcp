@@ -21,6 +21,7 @@ def get_daily_recommendations():
             for song in result['recommend']:
                 songs.append({
                     "id": song['id'],
+                    "fee": song.get('fee'),
                     "name": song['name'],
                     "artist": song['artists'][0]['name'] if song['artists'] else "未知",
                     "album": song['album']['name'] if song['album'] else ""
@@ -83,6 +84,7 @@ def search(keyword, category="song", limit=5):
             for song in res.get('songs', []):
                 items.append({
                     "id": song.get('id'),
+                    "fee": song.get('fee'),
                     "name": song.get('name'),
                     "artist": song['ar'][0]['name'] if song.get('ar') else "未知"
                 })
@@ -126,6 +128,7 @@ def get_playlist_detail(playlist_id):
         for track in playlist.get('tracks', []):
             songs.append({
                 "id": track.get('id'),
+                "fee": track.get('fee'),
                 "name": track.get('name'),
                 "artist": track['ar'][0]['name'] if track.get('ar') else "未知",
                 "album": track.get('al', {}).get('name', '')
@@ -193,6 +196,7 @@ def get_album_info(album_id):
         for song in result.get('songs', []):
             songs.append({
                 "id": song.get('id'),
+                "fee": song.get('fee'),
                 "name": song.get('name'),
                 "artist": song['ar'][0]['name'] if song.get('ar') else "未知"
             })
@@ -225,6 +229,7 @@ def get_artist_info(artist_id):
         for song in tracks_resp.get('songs', []):
             songs.append({
                 "id": song.get('id'),
+                "fee": song.get('fee'),
                 "name": song.get('name')
             })
 
